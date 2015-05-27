@@ -1,0 +1,16 @@
+val L1a = LEAF "a"
+val L1b = LEAF "b"
+val L1c = LEAF "c"
+val L2a = NODE [L1a, L1b, L1c]
+val L2b = NODE [L1b, L1c, L1a]
+val L3 = NODE [L2a, L2b, L1a, L1b]
+val L4 = NODE [L1c, L1b, L3]
+val L5 = NODE [L4]
+val iL1a = LEAF 1
+val iL1b = LEAF 2
+val iL1c = LEAF 3
+val iL2a = NODE [iL1a, iL1b, iL1c]
+val iL2b = NODE [iL1b, iL1c, iL1a]
+val iL3 = NODE [iL2a, iL2b, iL1a, iL1b]
+val iL4 = NODE [iL1c, iL1b, iL3]
+val iL5 = NODE [iL4]

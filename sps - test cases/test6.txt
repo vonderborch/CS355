@@ -1,0 +1,9 @@
+/f {
+1 2 add
+} def
+
+/y {
+3 4 mul
+} def
+
+f y

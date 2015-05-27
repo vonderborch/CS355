@@ -1,0 +1,10 @@
+/x 2 def
+   x 1 eq 
+    {5} 
+    {
+       x 2 eq 
+       {6} 
+       {7} 
+    ifelse
+    } 
+ ifelse

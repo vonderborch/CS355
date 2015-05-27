@@ -1,0 +1,4 @@
+1 2 add
+3 sub
+5 add
+100 mul

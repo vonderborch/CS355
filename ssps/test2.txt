@@ -1,0 +1,5 @@
+/x 4 def
+/g { x } def
+/f { /x 7 def x } def
+stack
+f g

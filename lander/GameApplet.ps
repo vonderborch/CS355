@@ -1,0 +1,1612 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 594 756
+%%Title: Enscript Output
+%%For: Carl Hauser
+%%Creator: GNU enscript 1.6.4
+%%CreationDate: Mon Apr 24 09:12:26 2006
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 4
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 4
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 9 9 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6 4
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 720 def
+/d_page_h 576 def
+/d_header_x 0 def
+/d_header_y 540 def
+/d_header_w 720 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 720 def
+/d_footer_h 0 def
+/d_output_w 720 def
+/d_output_h 540 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 1 def
+/fname (GameApplet.java) def
+/fdir () def
+/ftail (GameApplet.java) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (11/17/2004) def
+/modtimestr (04:24:28 PM) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+2 10.000000 2 0.970000 highlight_bars
+column_borders
+do_header
+27.6 528 M (1:) s
+/Courier-Oblique 9 9 SUF
+43.8 528 M
+(/*) s
+/F-gs-font 9 9 SF
+27.6 518 M (2:) s
+/Courier-Oblique 9 9 SUF
+43.8 518 M
+( * Copyright \(c\) 1995, 1996 Sun Microsystems, Inc. All Rights Reserved.) s
+/F-gs-font 9 9 SF
+27.6 508 M (3:) s
+/Courier-Oblique 9 9 SUF
+43.8 508 M
+( *) s
+/F-gs-font 9 9 SF
+27.6 498 M (4:) s
+/Courier-Oblique 9 9 SUF
+43.8 498 M
+( * Permission to use, copy, modify, and distribute this software) s
+/F-gs-font 9 9 SF
+27.6 488 M (5:) s
+/Courier-Oblique 9 9 SUF
+43.8 488 M
+( * and its documentation for NON-COMMERCIAL purposes and without) s
+/F-gs-font 9 9 SF
+27.6 478 M (6:) s
+/Courier-Oblique 9 9 SUF
+43.8 478 M
+( * fee is hereby granted provided that this copyright notice) s
+/F-gs-font 9 9 SF
+27.6 468 M (7:) s
+/Courier-Oblique 9 9 SUF
+43.8 468 M
+( * appears in all copies. Please refer to the file "copyright.html") s
+/F-gs-font 9 9 SF
+27.6 458 M (8:) s
+/Courier-Oblique 9 9 SUF
+43.8 458 M
+( * for further important copyright and licensing information.) s
+/F-gs-font 9 9 SF
+27.6 448 M (9:) s
+/Courier-Oblique 9 9 SUF
+43.8 448 M
+( *) s
+/F-gs-font 9 9 SF
+22.2 438 M (10:) s
+/Courier-Oblique 9 9 SUF
+43.8 438 M
+( * SUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF) s
+/F-gs-font 9 9 SF
+22.2 428 M (11:) s
+/Courier-Oblique 9 9 SUF
+43.8 428 M
+( * THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED) s
+/F-gs-font 9 9 SF
+22.2 418 M (12:) s
+/Courier-Oblique 9 9 SUF
+43.8 418 M
+( * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A) s
+/F-gs-font 9 9 SF
+22.2 408 M (13:) s
+/Courier-Oblique 9 9 SUF
+43.8 408 M
+( * PARTICULAR PURPOSE, OR NON-INFRINGEMENT. SUN SHALL NOT BE LIABLE FOR) s
+/F-gs-font 9 9 SF
+22.2 398 M (14:) s
+/Courier-Oblique 9 9 SUF
+43.8 398 M
+( * ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR) s
+/F-gs-font 9 9 SF
+22.2 388 M (15:) s
+/Courier-Oblique 9 9 SUF
+43.8 388 M
+( * DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.) s
+/F-gs-font 9 9 SF
+22.2 378 M (16:) s
+/Courier-Oblique 9 9 SUF
+43.8 378 M
+( */) s
+/F-gs-font 9 9 SF
+22.2 368 M (17:) s
+/Courier-Bold 9 9 SUF
+43.8 368 M
+(import) s
+/F-gs-font 9 9 SF
+76.2 368 M
+( java.awt.*;) s
+22.2 358 M (18:) s
+/Courier-Bold 9 9 SUF
+43.8 358 M
+(import) s
+/F-gs-font 9 9 SF
+76.2 358 M
+( java.applet.Applet;) s
+22.2 348 M (19:) s
+22.2 338 M (20:) s
+/Courier-Oblique 9 9 SUF
+43.8 338 M
+(/* ) s
+/F-gs-font 9 9 SF
+22.2 328 M (21:) s
+/Courier-Oblique 9 9 SUF
+43.8 328 M
+( * This applet animates graphics that it generates.  This example) s
+/F-gs-font 9 9 SF
+22.2 318 M (22:) s
+/Courier-Oblique 9 9 SUF
+43.8 318 M
+( * eliminates flashing by overriding the update\(\) method.  For the) s
+/F-gs-font 9 9 SF
+22.2 308 M (23:) s
+/Courier-Oblique 9 9 SUF
+43.8 308 M
+( * graphics this example generates, overriding update\(\) isn't quite) s
+/F-gs-font 9 9 SF
+22.2 298 M (24:) s
+/Courier-Oblique 9 9 SUF
+43.8 298 M
+( * good enough -- on some systems, you can still see a crawling effect.) s
+/F-gs-font 9 9 SF
+22.2 288 M (25:) s
+/Courier-Oblique 9 9 SUF
+43.8 288 M
+( */) s
+/F-gs-font 9 9 SF
+22.2 278 M (26:) s
+22.2 268 M (27:) s
+/Courier-Bold 9 9 SUF
+43.8 268 M
+(public) s
+/F-gs-font 9 9 SF
+76.2 268 M
+( ) s
+/Courier-Bold 9 9 SUF
+81.6 268 M
+(class) s
+/F-gs-font 9 9 SF
+108.6 268 M
+( GameApplet ) s
+/Courier-Bold 9 9 SUF
+173.4 268 M
+(extends) s
+/F-gs-font 9 9 SF
+211.2 268 M
+( Applet ) s
+/Courier-Bold 9 9 SUF
+254.4 268 M
+(implements) s
+/F-gs-font 9 9 SF
+308.4 268 M
+( Runnable {) s
+22.2 258 M (28:) s
+43.8 258 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 258 M
+(int) s
+/F-gs-font 9 9 SF
+81.6 258 M
+( frameNumber = -1;) s
+22.2 248 M (29:) s
+43.8 248 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 248 M
+(int) s
+/F-gs-font 9 9 SF
+81.6 248 M
+( delay;) s
+22.2 238 M (30:) s
+43.8 238 M
+(    Thread animatorThread;) s
+22.2 228 M (31:) s
+43.8 228 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 228 M
+(boolean) s
+/F-gs-font 9 9 SF
+103.2 228 M
+( updirection = ) s
+/Courier-Bold 9 9 SUF
+184.2 228 M
+(false) s
+/F-gs-font 9 9 SF
+211.2 228 M
+(;) s
+22.2 218 M (32:) s
+43.8 218 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 218 M
+(boolean) s
+/F-gs-font 9 9 SF
+103.2 218 M
+( reachedSurface = ) s
+/Courier-Bold 9 9 SUF
+200.4 218 M
+(false) s
+/F-gs-font 9 9 SF
+227.4 218 M
+(;) s
+22.2 208 M (33:) s
+43.8 208 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 208 M
+(boolean) s
+/F-gs-font 9 9 SF
+103.2 208 M
+( landed = ) s
+/Courier-Bold 9 9 SUF
+157.2 208 M
+(false) s
+/F-gs-font 9 9 SF
+184.2 208 M
+(;) s
+22.2 198 M (34:) s
+43.8 198 M
+(    String landedMessage = ) s
+/Courier-Bold 9 9 SUF
+189.6 198 M
+("Safely on the ground") s
+/F-gs-font 9 9 SF
+308.4 198 M
+(;) s
+22.2 188 M (35:) s
+43.8 188 M
+(    String crashedMessage = ) s
+/Courier-Bold 9 9 SUF
+195 188 M
+("Reduced to a rubble of bits") s
+/F-gs-font 9 9 SF
+351.6 188 M
+(;) s
+22.2 178 M (36:) s
+43.8 178 M
+(    Image myImage;) s
+22.2 168 M (37:) s
+43.8 168 M
+(    Image myImageLander;) s
+22.2 158 M (38:) s
+43.8 158 M
+(    Image myImageLanderB;) s
+22.2 148 M (39:) s
+43.8 148 M
+(    Rocket rk;) s
+22.2 138 M (40:) s
+43.8 138 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 138 M
+(private) s
+/F-gs-font 9 9 SF
+103.2 138 M
+( ) s
+/Courier-Bold 9 9 SUF
+108.6 138 M
+(static) s
+/F-gs-font 9 9 SF
+141 138 M
+( ) s
+/Courier-Bold 9 9 SUF
+146.4 138 M
+(final) s
+/F-gs-font 9 9 SF
+173.4 138 M
+( ) s
+/Courier-Bold 9 9 SUF
+178.8 138 M
+(double) s
+/F-gs-font 9 9 SF
+211.2 138 M
+( noBurn = 0.0;) s
+22.2 128 M (41:) s
+43.8 128 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 128 M
+(private) s
+/F-gs-font 9 9 SF
+103.2 128 M
+( ) s
+/Courier-Bold 9 9 SUF
+108.6 128 M
+(static) s
+/F-gs-font 9 9 SF
+141 128 M
+( ) s
+/Courier-Bold 9 9 SUF
+146.4 128 M
+(final) s
+/F-gs-font 9 9 SF
+173.4 128 M
+( ) s
+/Courier-Bold 9 9 SUF
+178.8 128 M
+(double) s
+/F-gs-font 9 9 SF
+211.2 128 M
+( fullBurn = 1.0;) s
+22.2 118 M (42:) s
+22.2 108 M (43:) s
+43.8 108 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 108 M
+(int) s
+/F-gs-font 9 9 SF
+81.6 108 M
+( squareSize = 20;) s
+22.2 98 M (44:) s
+43.8 98 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 98 M
+(boolean) s
+/F-gs-font 9 9 SF
+103.2 98 M
+( fillColumnTop = ) s
+/Courier-Bold 9 9 SUF
+195 98 M
+(true) s
+/F-gs-font 9 9 SF
+216.6 98 M
+(;) s
+22.2 88 M (45:) s
+22.2 78 M (46:) s
+43.8 78 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 78 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 78 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 78 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 78 M
+( init\(\) {) s
+22.2 68 M (47:) s
+43.8 68 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 68 M
+(// Initialize the rocket and planet) s
+/F-gs-font 9 9 SF
+22.2 58 M (48:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+22.2 48 M (49:) s
+43.8 48 M
+(        String str;) s
+22.2 38 M (50:) s
+43.8 38 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 38 M
+(int) s
+/F-gs-font 9 9 SF
+103.2 38 M
+( fps = 10;) s
+22.2 28 M (51:) s
+43.8 28 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 28 M
+(/* make a planet named Pluto with gravity 0.3 and surface 0.0 */) s
+/F-gs-font 9 9 SF
+22.2 18 M (52:) s
+43.8 18 M
+(        Planet pluto = ) s
+/Courier-Bold 9 9 SUF
+168 18 M
+(new) s
+/F-gs-font 9 9 SF
+184.2 18 M
+( Planet\(\); ) s
+/Courier-Oblique 9 9 SUF
+243.6 18 M
+(// Change this to correct constructor) s
+/F-gs-font 9 9 SF
+22.2 8 M (53:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 2 def
+/fname (GameApplet.java) def
+/fdir () def
+/ftail (GameApplet.java) def
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (11/17/2004) def
+/modtimestr (04:24:28 PM) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+2 10.000000 2 0.970000 highlight_bars
+column_borders
+do_header
+22.2 528 M (54:) s
+43.8 528 M
+(        myImage = getImage\(getCodeBase\(\),) s
+/Courier-Bold 9 9 SUF
+265.2 528 M
+("landscape.gif") s
+/F-gs-font 9 9 SF
+346.2 528 M
+(\);) s
+22.2 518 M (55:) s
+43.8 518 M
+(        myImageLander = getImage\(getCodeBase\(\),) s
+/Courier-Bold 9 9 SUF
+297.6 518 M
+("lander.gif") s
+/F-gs-font 9 9 SF
+362.4 518 M
+(\);) s
+22.2 508 M (56:) s
+43.8 508 M
+(        myImageLanderB = getImage\(getCodeBase\(\),) s
+/Courier-Bold 9 9 SUF
+303 508 M
+("landerburned.gif") s
+/F-gs-font 9 9 SF
+400.2 508 M
+(\);) s
+22.2 498 M (57:) s
+43.8 498 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 498 M
+(//How many milliseconds between frames?) s
+/F-gs-font 9 9 SF
+22.2 488 M (58:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 488 M
+(        str = getParameter\() s
+/Courier-Bold 9 9 SUF
+189.6 488 M
+("fps") s
+/F-gs-font 9 9 SF
+216.6 488 M
+(\);) s
+22.2 478 M (59:) s
+43.8 478 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 478 M
+(try) s
+/F-gs-font 9 9 SF
+103.2 478 M
+( {) s
+22.2 468 M (60:) s
+43.8 468 M
+(            ) s
+/Courier-Bold 9 9 SUF
+108.6 468 M
+(if) s
+/F-gs-font 9 9 SF
+119.4 468 M
+( \(str != ) s
+/Courier-Bold 9 9 SUF
+168 468 M
+(null) s
+/F-gs-font 9 9 SF
+189.6 468 M
+(\) {) s
+22.2 458 M (61:) s
+43.8 458 M
+(                fps = Integer.parseInt\(str\);) s
+22.2 448 M (62:) s
+43.8 448 M
+(            }) s
+22.2 438 M (63:) s
+43.8 438 M
+(        } ) s
+/Courier-Bold 9 9 SUF
+97.8 438 M
+(catch) s
+/F-gs-font 9 9 SF
+124.8 438 M
+( \(Exception e\) {}) s
+22.2 428 M (64:) s
+43.8 428 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 428 M
+(/* calculate the inter-frame time \(in milliseconds\) */) s
+/F-gs-font 9 9 SF
+22.2 418 M (65:) s
+43.8 418 M
+(        delay = \(fps > 0\) ? \(1000 / fps\) : 100;) s
+22.2 408 M (66:) s
+22.2 398 M (67:) s
+43.8 398 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 398 M
+(//How many pixels wide is each square?) s
+/F-gs-font 9 9 SF
+22.2 388 M (68:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 388 M
+(        str = getParameter\() s
+/Courier-Bold 9 9 SUF
+189.6 388 M
+("squareWidth") s
+/F-gs-font 9 9 SF
+259.8 388 M
+(\);) s
+22.2 378 M (69:) s
+43.8 378 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 378 M
+(try) s
+/F-gs-font 9 9 SF
+103.2 378 M
+( {) s
+22.2 368 M (70:) s
+43.8 368 M
+(            ) s
+/Courier-Bold 9 9 SUF
+108.6 368 M
+(if) s
+/F-gs-font 9 9 SF
+119.4 368 M
+( \(str != ) s
+/Courier-Bold 9 9 SUF
+168 368 M
+(null) s
+/F-gs-font 9 9 SF
+189.6 368 M
+(\) {) s
+22.2 358 M (71:) s
+43.8 358 M
+(                squareSize = Integer.parseInt\(str\);) s
+22.2 348 M (72:) s
+43.8 348 M
+(            }) s
+22.2 338 M (73:) s
+43.8 338 M
+(        } ) s
+/Courier-Bold 9 9 SUF
+97.8 338 M
+(catch) s
+/F-gs-font 9 9 SF
+124.8 338 M
+( \(Exception e\) {}) s
+22.2 328 M (74:) s
+43.8 328 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 328 M
+(/* create a rocket */) s
+/F-gs-font 9 9 SF
+22.2 318 M (75:) s
+43.8 318 M
+(    }) s
+22.2 308 M (76:) s
+22.2 298 M (77:) s
+43.8 298 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 298 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 298 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 298 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 298 M
+( start\(\) {) s
+22.2 288 M (78:) s
+43.8 288 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 288 M
+(//Start animating!) s
+/F-gs-font 9 9 SF
+22.2 278 M (79:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 278 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 278 M
+(if) s
+/F-gs-font 9 9 SF
+97.8 278 M
+( \(animatorThread == ) s
+/Courier-Bold 9 9 SUF
+205.8 278 M
+(null) s
+/F-gs-font 9 9 SF
+227.4 278 M
+(\) {) s
+22.2 268 M (80:) s
+43.8 268 M
+(            animatorThread = ) s
+/Courier-Bold 9 9 SUF
+200.4 268 M
+(new) s
+/F-gs-font 9 9 SF
+216.6 268 M
+( Thread\() s
+/Courier-Bold 9 9 SUF
+259.8 268 M
+(this) s
+/F-gs-font 9 9 SF
+281.4 268 M
+(\);) s
+22.2 258 M (81:) s
+43.8 258 M
+(        }) s
+22.2 248 M (82:) s
+43.8 248 M
+(        animatorThread.start\(\);) s
+22.2 238 M (83:) s
+43.8 238 M
+(    }) s
+22.2 228 M (84:) s
+22.2 218 M (85:) s
+43.8 218 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 218 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 218 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 218 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 218 M
+( stop\(\) {) s
+22.2 208 M (86:) s
+43.8 208 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 208 M
+(//Stop the animating thread.) s
+/F-gs-font 9 9 SF
+22.2 198 M (87:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 198 M
+(        animatorThread = ) s
+/Courier-Bold 9 9 SUF
+178.8 198 M
+(null) s
+/F-gs-font 9 9 SF
+200.4 198 M
+(;) s
+22.2 188 M (88:) s
+43.8 188 M
+(    }) s
+22.2 178 M (89:) s
+22.2 168 M (90:) s
+43.8 168 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 168 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 168 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 168 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 168 M
+( run\(\) {) s
+22.2 158 M (91:) s
+43.8 158 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 158 M
+(//Just to be nice, lower this thread's priority) s
+/F-gs-font 9 9 SF
+22.2 148 M (92:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 148 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 148 M
+(//so it can't interfere with other processing going on.) s
+/F-gs-font 9 9 SF
+22.2 138 M (93:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 138 M
+(        Thread.currentThread\(\).setPriority\(Thread.MIN_PRIORITY\);) s
+22.2 128 M (94:) s
+43.8 128 M
+( ) s
+22.2 118 M (95:) s
+43.8 118 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 118 M
+(//Remember the starting time) s
+/F-gs-font 9 9 SF
+22.2 108 M (96:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 108 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 108 M
+(long) s
+/F-gs-font 9 9 SF
+108.6 108 M
+( startTime = System.currentTimeMillis\(\);) s
+22.2 98 M (97:) s
+22.2 88 M (98:) s
+43.8 88 M
+(        ) s
+/Courier-Oblique 9 9 SUF
+87 88 M
+(//This is the animation loop.) s
+/F-gs-font 9 9 SF
+22.2 78 M (99:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 78 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 78 M
+(while) s
+/F-gs-font 9 9 SF
+114 78 M
+( \(Thread.currentThread\(\) == animatorThread\) {) s
+16.8 68 M (100:) s
+43.8 68 M
+(            ) s
+/Courier-Oblique 9 9 SUF
+108.6 68 M
+(//Advance the animation frame.) s
+/F-gs-font 9 9 SF
+16.8 58 M (101:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 58 M
+(       ) s
+/Courier-Bold 9 9 SUF
+81.6 58 M
+(try) s
+/F-gs-font 9 9 SF
+97.8 58 M
+( {) s
+16.8 48 M (102:) s
+43.8 48 M
+(                ) s
+/Courier-Oblique 9 9 SUF
+130.2 48 M
+(/* note: delay is in milliSeconds but the ) s
+/F-gs-font 9 9 SF
+16.8 38 M (103:) s
+/Courier-Oblique 9 9 SUF
+43.8 38 M
+(                   dt parameter of Rocket.move is in seconds.) s
+/F-gs-font 9 9 SF
+16.8 28 M (104:) s
+/Courier-Oblique 9 9 SUF
+43.8 28 M
+(                   Compensate accordingly.) s
+/F-gs-font 9 9 SF
+16.8 18 M (105:) s
+/Courier-Oblique 9 9 SUF
+43.8 18 M
+(       */) s
+/F-gs-font 9 9 SF
+16.8 8 M (106:) s
+43.8 8 M
+(          ) s
+/Courier-Oblique 9 9 SUF
+97.8 8 M
+(/* ... execute a Rocket.move ... */) s
+/F-gs-font 9 9 SF
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 3 def
+/fname (GameApplet.java) def
+/fdir () def
+/ftail (GameApplet.java) def
+% User defined strings:
+/pagenumstr (3) def
+/moddatestr (11/17/2004) def
+/modtimestr (04:24:28 PM) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+2 10.000000 2 0.970000 highlight_bars
+column_borders
+do_header
+16.8 528 M (107:) s
+43.8 528 M
+(       } ) s
+/Courier-Bold 9 9 SUF
+92.4 528 M
+(catch) s
+/F-gs-font 9 9 SF
+119.4 528 M
+( \(RocketException  e\) {) s
+16.8 518 M (108:) s
+43.8 518 M
+(       }) s
+16.8 508 M (109:) s
+16.8 498 M (110:) s
+43.8 498 M
+(            ) s
+/Courier-Oblique 9 9 SUF
+108.6 498 M
+(//Display it.) s
+/F-gs-font 9 9 SF
+16.8 488 M (111:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 488 M
+(            repaint\(\);) s
+16.8 478 M (112:) s
+16.8 468 M (113:) s
+43.8 468 M
+(            ) s
+/Courier-Oblique 9 9 SUF
+108.6 468 M
+(//Delay depending on how far we are behind.) s
+/F-gs-font 9 9 SF
+16.8 458 M (114:) s
+/Courier-Oblique 9 9 SUF
+/F-gs-font 9 9 SF
+43.8 458 M
+(            ) s
+/Courier-Bold 9 9 SUF
+108.6 458 M
+(try) s
+/F-gs-font 9 9 SF
+124.8 458 M
+( {) s
+16.8 448 M (115:) s
+43.8 448 M
+(                startTime += delay;) s
+16.8 438 M (116:) s
+43.8 438 M
+(                Thread.sleep\(Math.max\(0, ) s
+16.8 428 M (117:) s
+43.8 428 M
+(                                      startTime-System.currentTimeMillis\(\)\)\);) s
+16.8 418 M (118:) s
+43.8 418 M
+(            } ) s
+/Courier-Bold 9 9 SUF
+119.4 418 M
+(catch) s
+/F-gs-font 9 9 SF
+146.4 418 M
+( \(InterruptedException e\) {) s
+16.8 408 M (119:) s
+43.8 408 M
+(                ) s
+/Courier-Oblique 9 9 SUF
+130.2 408 M
+(/* Update landed and reachedSurface */) s
+/F-gs-font 9 9 SF
+16.8 398 M (120:) s
+43.8 398 M
+(                ) s
+/Courier-Oblique 9 9 SUF
+130.2 398 M
+(/* repaint\(\) */) s
+/F-gs-font 9 9 SF
+16.8 388 M (121:) s
+43.8 388 M
+(                ) s
+/Courier-Bold 9 9 SUF
+130.2 388 M
+(break) s
+/F-gs-font 9 9 SF
+157.2 388 M
+(;) s
+16.8 378 M (122:) s
+43.8 378 M
+(            }) s
+16.8 368 M (123:) s
+43.8 368 M
+(        }) s
+16.8 358 M (124:) s
+43.8 358 M
+(    }) s
+16.8 348 M (125:) s
+16.8 338 M (126:) s
+43.8 338 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 338 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 338 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 338 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 338 M
+( paint\(Graphics g\) {) s
+16.8 328 M (127:) s
+43.8 328 M
+(        update\(g\);) s
+16.8 318 M (128:) s
+43.8 318 M
+(    }) s
+16.8 308 M (129:) s
+16.8 298 M (130:) s
+43.8 298 M
+(    ) s
+/Courier-Bold 9 9 SUF
+65.4 298 M
+(public) s
+/F-gs-font 9 9 SF
+97.8 298 M
+( ) s
+/Courier-Bold 9 9 SUF
+103.2 298 M
+(void) s
+/F-gs-font 9 9 SF
+124.8 298 M
+( update\(Graphics g\) {) s
+16.8 288 M (131:) s
+43.8 288 M
+(        g.setColor\(Color.white\);) s
+16.8 278 M (132:) s
+43.8 278 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 278 M
+(if) s
+/F-gs-font 9 9 SF
+97.8 278 M
+( \(reachedSurface\) {) s
+16.8 268 M (133:) s
+43.8 268 M
+(          g.drawImage\(myImage, 0, 0, ) s
+/Courier-Bold 9 9 SUF
+243.6 268 M
+(this) s
+/F-gs-font 9 9 SF
+265.2 268 M
+(\);) s
+16.8 258 M (134:) s
+43.8 258 M
+(          g.drawImage\(myImageLander, 300, 350 - \() s
+/Courier-Bold 9 9 SUF
+308.4 258 M
+(int) s
+/F-gs-font 9 9 SF
+324.6 258 M
+(\) rk.getHeight\(\), ) s
+/Courier-Bold 9 9 SUF
+421.8 258 M
+(this) s
+/F-gs-font 9 9 SF
+443.4 258 M
+(\);) s
+16.8 248 M (135:) s
+43.8 248 M
+(          ) s
+/Courier-Bold 9 9 SUF
+97.8 248 M
+(if) s
+/F-gs-font 9 9 SF
+108.6 248 M
+( \(landed\) g.drawString\(landedMessage, 50, 50\);) s
+16.8 238 M (136:) s
+43.8 238 M
+(          ) s
+/Courier-Bold 9 9 SUF
+97.8 238 M
+(else) s
+/F-gs-font 9 9 SF
+119.4 238 M
+( g.drawString\(crashedMessage, 50, 50\);) s
+16.8 228 M (137:) s
+43.8 228 M
+(          stop\(\);) s
+16.8 218 M (138:) s
+43.8 218 M
+(          }) s
+16.8 208 M (139:) s
+43.8 208 M
+(        ) s
+/Courier-Bold 9 9 SUF
+87 208 M
+(else) s
+/F-gs-font 9 9 SF
+108.6 208 M
+( {) s
+16.8 198 M (140:) s
+43.8 198 M
+(          g.drawImage\(myImage, 0, 0, ) s
+/Courier-Bold 9 9 SUF
+243.6 198 M
+(this) s
+/F-gs-font 9 9 SF
+265.2 198 M
+(\);) s
+16.8 188 M (141:) s
+43.8 188 M
+(          ) s
+/Courier-Bold 9 9 SUF
+97.8 188 M
+(if) s
+/F-gs-font 9 9 SF
+108.6 188 M
+( \(updirection\) ) s
+16.8 178 M (142:) s
+43.8 178 M
+(            g.drawImage\(myImageLanderB, 300, 355 - \() s
+/Courier-Bold 9 9 SUF
+324.6 178 M
+(int) s
+/F-gs-font 9 9 SF
+340.8 178 M
+(\) rk.getHeight\(\), ) s
+/Courier-Bold 9 9 SUF
+438 178 M
+(this) s
+/F-gs-font 9 9 SF
+459.6 178 M
+(\);) s
+16.8 168 M (143:) s
+43.8 168 M
+(          ) s
+/Courier-Bold 9 9 SUF
+97.8 168 M
+(else) s
+/F-gs-font 9 9 SF
+119.4 168 M
+( ) s
+16.8 158 M (144:) s
+43.8 158 M
+(            g.drawImage\(myImageLander, 300, 355 - \() s
+/Courier-Bold 9 9 SUF
+319.2 158 M
+(int) s
+/F-gs-font 9 9 SF
+335.4 158 M
+(\) rk.getHeight\(\), ) s
+/Courier-Bold 9 9 SUF
+432.6 158 M
+(this) s
+/F-gs-font 9 9 SF
+454.2 158 M
+(\);) s
+16.8 148 M (145:) s
+43.8 148 M
+(          }) s
+16.8 138 M (146:) s
+43.8 138 M
+(        g.drawString\(rk.getState\(\), 10, 20\);) s
+16.8 128 M (147:) s
+43.8 128 M
+(    }) s
+16.8 118 M (148:) s
+43.8 118 M
+(}) s
+16.8 108 M (149:) s
+_R
+S
+%%Trailer
+%%Pages: 3
+%%DocumentNeededResources: font Times-Roman Courier-Oblique Courier-Bold 
+%%+ font Courier Times-Bold 
+%%EOF

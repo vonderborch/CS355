@@ -1,0 +1,5 @@
+/x 1 def
+     x 1 eq  
+     {3}     
+     {4} 
+  ifelse

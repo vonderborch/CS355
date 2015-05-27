@@ -1,0 +1,7 @@
+#lang scheme
+(define nth (lambda (L n)
+              (if (eq? n 1)
+                  (car L))
+              (nth (cdr L) (- n 1))
+              ))
+                  

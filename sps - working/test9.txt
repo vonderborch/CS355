@@ -1,0 +1,13 @@
+/f {
+	dictz begin
+	/x 2 def
+	/y { 3 3 mul } def
+	x y add
+	end
+} def
+
+/g {
+	3 4 mul
+} def
+
+f g add
